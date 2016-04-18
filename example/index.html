@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Example</title>
+</head>
+<body>
+
+<script src="../src/index.js"></script>	
+<script>
+	localStore.setItem('a', new Array(999999*9).join('xxxxx'), function(e) {
+		console.log(e);
+	});	
+</script>
+</body>
+</html>
