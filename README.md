@@ -5,13 +5,13 @@ A wrapper of localStorage in order to support expiration time and asynchronous e
 
 ## methods
 
-### clear() *asynchronous*
+##### clear() ```asynchronous```
 
 ```js
 localStore.clear();
 ```
 
-### setItem(key, data, expires, onerror) *asynchronous*
+##### setItem(key, data, expires, onerror) ```asynchronous```
 
 ```js
 // store data for an hour.
@@ -29,7 +29,7 @@ localStore.setItem('testKey', {name: 'yannxiao'}, function(err) {
 });
 ```
 
-### getItem(key, callback) *asynchronous*
+##### getItem(key, callback) ```asynchronous```
 
 ```js
 localStore.getItem('testKey', function(data) {
@@ -37,19 +37,19 @@ localStore.getItem('testKey', function(data) {
 });
 ```
 
-### removeItem(key) *asynchronous*
+##### removeItem(key) ```asynchronous```
 
 ```js
 localStore.removeItem('testKey1 testKey2');
 ```
 
-### key(nth) *synchronous*
+##### key(nth) ```synchronous```
 
 ```js
 var key = localStore.key(0);
 ```
 
-### getLength() *synchronous*
+##### getLength() ```synchronous```
 
 ```js
 var len = localStore.getLength();
