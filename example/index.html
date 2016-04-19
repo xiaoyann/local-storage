@@ -8,8 +8,13 @@
 
 <script src="../src/index.js"></script>	
 <script>
+	// localStore.setItem('aa', 123);
+
+	// localStore.getItem('aa', function(data) {
+	// 	console.log(data);
+	// });
 	localStore.setItem('a', new Array(999999*9).join('xxxxx'), function(e) {
-		console.log(e);
+		console.dir(e);
 	});	
 </script>
 </body>

@@ -1,6 +1,6 @@
 /**
- * A wrapper of localStorage for support expires.
- * And every operating is asynchronous.
+ * A wrapper of localStorage 
+ * in order to support expiration time and asynchronous execution.
  */
 ;(function(root, factory) {
 	if (typeof define === 'function' && define.amd) {
@@ -18,25 +18,34 @@
 	var storage = window.localStorage;
 
 
+	// inspired by https://gist.github.com/WebReflection/2953527
+	var nextTick = (function() {
+		var fnc = window.requestAnimationFrame;
+		var prefixes = 'ms o moz webkit'.split(' ');
+		var i = prefixes.length;
+		while (!fnc && --i > -1) {
+			fnc = window[prefixes[i] + 'RequestAnimationFrame'];
+		}
+		return fnc || window.setImmediate || window.setTimeout;
+	})();
+
+
 	function serialize(data) {
 		return JSON.stringify(data);
 	}
 
 	
 	function unserialize(data) {
-		return JSON.parse(data);
-	}
-
-	
-	function asyncExec(callback) {
-		setTimeout(callback, 10);
+		try {
+			return JSON.parse(data);
+		} catch(e) {}
 	}
 
 
 	return {
 
 		clear: function() {
-			asyncExec(function() { storage.clear(); });
+			nextTick(function() { storage.clear(); });
 		},
 
 		// save data with expires.
@@ -44,17 +53,14 @@
 		// expires is a number of micro second to determine that how long the data will be valid.
 		setItem: function(key, data, expires, onerror) {
 			var toSave = {v: data};
-
 			if (typeof expires === 'function') {
 				onerror = expires; 
 				expires = undefined;
 			}
-
 			if (expires > 0) {
 				toSave.t = Date.now() + expires;
 			}
-			
-			asyncExec(function() {
+			nextTick(function() {
 				try {
 					storage.setItem(key, serialize(toSave));
 				} catch(e) {
@@ -64,30 +70,36 @@
 		},
 
 		getItem: function(key, callback) {
-			asyncExec(function() {
-				var data = unserialize(storage.getItem(key));
-				var val = data.v;
-				var expires = data.t;
-				if (typeof expires !== 'undefined' && Date.now() >= expires) {
-					val = null; 
-					storage.removeItem(key);
+			nextTick(function() {
+				var data, val, expires;
+				data = storage.getItem(key);
+				if (data && (data = unserialize(data))) {
+					val = data.v;
+					expires = data.t;
+					if (typeof expires !== 'undefined' && Date.now() >= expires) {
+						val = null; 
+						storage.removeItem(key);
+					}	
 				}
-				callback(val);
+				callback(typeof val === 'undefined' ? null : val);
 			});
 		},
 
+		// support mutiple keys
 		removeItem: function(key) {
-			asyncExec(function() {
+			nextTick(function() {
 				key.split(' ').forEach(function(k) {
 					storage.removeItem(k);
 				});
 			});
 		},
 
-		key: function(nth, callback) {
-			asyncExec(function() {
-				callback(storage.key(nth));
-			});
+		key: function(nth) {
+			return storage.key(nth);
+		},
+
+		getLength: function() {
+			return storage.length;
 		}
 	};
 });
