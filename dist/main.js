@@ -2,15 +2,15 @@
  * A wrapper of localStorage 
  * in order to support expiration time and asynchronous execution.
  */
-;(function(root, factory) {
+;(function(factory) {
 	if (typeof define === 'function' && define.amd) {
     	define([], factory);
   	} else if (typeof exports === 'object') {
-    	module.exports = factory(root);
+    	module.exports = factory();
   	} else {
-    	root.localStore = factory(root);
+    	window.localStore = factory();
   	}
-})(window, function(window) {
+})(function() {
 
 	'use strict';
 
